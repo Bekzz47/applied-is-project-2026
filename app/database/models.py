@@ -1,4 +1,3 @@
-from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship
@@ -23,7 +22,9 @@ class Item(SQLModel, table=True):
     supplier_id: int = Field(foreign_key="supplier.id")
     category: Optional[Category] = Relationship(back_populates="items")
     supplier: Optional[Supplier] = Relationship(back_populates="items")
-    transactions: list["StockTransaction"] = Relationship(back_populates="item")
+    transactions: list["StockTransaction"] = Relationship(
+        back_populates="item", cascade_delete=True
+    )
 
 class StockTransaction(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

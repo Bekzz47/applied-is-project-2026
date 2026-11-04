@@ -1,3 +1,4 @@
+from sqlalchemy import text
 from sqlmodel import Session, select
 from app.database.db import engine, init_db
 from app.database.models import Category, Supplier, Item, StockTransaction
@@ -5,16 +6,27 @@ from app.database.models import Category, Supplier, Item, StockTransaction
 def seed():
     init_db()
     with Session(engine) as session:
-        if session.exec(select(Category)).first():
-            print("Database already seeded")
-            return
-        categories = [Category(name=n) for n in ("Электроника", "Одежда", "Канцелярия")]
-        suppliers = [Supplier(name=n, email=e) for n, e in (
+        # Serialize seed runs so concurrent starts cannot duplicate demo records.
+        session.execute(text("BEGIN IMMEDIATE"))
+        categories = []
+        for name in ("Электроника", "Одежда", "Канцелярия"):
+            category = session.exec(select(Category).where(Category.name == name)).first()
+            if category is None:
+                category = Category(name=name)
+                session.add(category)
+            categories.append(category)
+
+        suppliers = []
+        for name, email in (
             ("Tech Supply", "tech@example.com"),
             ("Fashion Trade", "fashion@example.com"),
             ("Office Goods", "office@example.com"),
-        )]
-        session.add_all(categories + suppliers)
+        ):
+            supplier = session.exec(select(Supplier).where(Supplier.name == name)).first()
+            if supplier is None:
+                supplier = Supplier(name=name, email=email)
+                session.add(supplier)
+            suppliers.append(supplier)
         session.flush()
         data = [
             ("Ноутбук", 320000, 10, 0, 0),
@@ -23,12 +35,26 @@ def seed():
             ("Ручка", 350, 100, 2, 2),
             ("Блокнот", 1200, 50, 2, 2),
         ]
-        items = [Item(name=n, price=p, quantity=q, category_id=categories[c].id, supplier_id=suppliers[s].id) for n, p, q, c, s in data]
-        session.add_all(items)
-        session.flush()
-        session.add_all([StockTransaction(item_id=i.id, transaction_type="in", quantity=i.quantity) for i in items])
+        for name, price, quantity, category_index, supplier_index in data:
+            category_id = categories[category_index].id
+            supplier_id = suppliers[supplier_index].id
+            item = session.exec(select(Item).where(
+                Item.name == name,
+                Item.category_id == category_id,
+                Item.supplier_id == supplier_id,
+            )).first()
+            if item is None:
+                item = Item(
+                    name=name, price=price, quantity=quantity,
+                    category_id=category_id, supplier_id=supplier_id,
+                )
+                session.add(item)
+                session.flush()
+                session.add(StockTransaction(
+                    item_id=item.id, transaction_type="in", quantity=quantity,
+                ))
         session.commit()
-        print("Seeded 3 categories, 3 suppliers, 5 items and 5 transactions")
+        print("Demo data ready: 3 categories, 3 suppliers and 5 items with initial transactions")
 
 if __name__ == "__main__":
     seed()
