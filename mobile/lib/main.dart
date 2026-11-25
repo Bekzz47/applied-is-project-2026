@@ -21,6 +21,8 @@ class WarehouseApp extends StatelessWidget {
       title: 'Склад',
       theme: ThemeData(
         colorScheme: colors,
+        fontFamily: 'Roboto',
+        fontFamilyFallback: const ['Currency'],
         scaffoldBackgroundColor: canvas,
         inputDecorationTheme: const InputDecorationTheme(
           filled: true,
