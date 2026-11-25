@@ -4,6 +4,7 @@ from pydantic import ConfigDict
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, SQLModel, Field, select
 from app.database.db import get_session
+from app.security import require_item_writer
 from app.database.models import Category, Item, Supplier
 
 router = APIRouter(prefix="/items", tags=["Items"])
@@ -59,7 +60,7 @@ def get_item(item_id: int, session: SessionDep):
         raise HTTPException(status_code=404, detail="Item not found")
     return item
 
-@router.post("", response_model=Item, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=Item, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_item_writer)])
 def create_item(data: ItemCreate, session: SessionDep):
     validate_references(session, data.category_id, data.supplier_id)
     item = Item.model_validate(data)
@@ -72,12 +73,20 @@ def create_item(data: ItemCreate, session: SessionDep):
         raise HTTPException(status_code=422, detail="Invalid category or supplier")
     return item
 
-@router.patch("/{item_id}", response_model=Item)
+@router.patch("/{item_id}", response_model=Item, dependencies=[Depends(require_item_writer)])
 def update_item(item_id: int, data: ItemUpdate, session: SessionDep):
+    return save_item(item_id, data.model_dump(exclude_unset=True), session)
+
+
+@router.put("/{item_id}", response_model=Item, dependencies=[Depends(require_item_writer)])
+def replace_item(item_id: int, data: ItemCreate, session: SessionDep):
+    return save_item(item_id, data.model_dump(), session)
+
+
+def save_item(item_id: int, changes: dict, session: Session):
     item = session.get(Item, item_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Item not found")
-    changes = data.model_dump(exclude_unset=True)
     if any(value is None for value in changes.values()):
         raise HTTPException(status_code=422, detail="Fields cannot be null")
     validate_references(
@@ -95,7 +104,7 @@ def update_item(item_id: int, data: ItemUpdate, session: SessionDep):
         raise HTTPException(status_code=422, detail="Invalid category or supplier")
     return item
 
-@router.delete("/{item_id}")
+@router.delete("/{item_id}", dependencies=[Depends(require_item_writer)])
 def delete_item(item_id: int, session: SessionDep):
     item = session.get(Item, item_id)
     if item is None:

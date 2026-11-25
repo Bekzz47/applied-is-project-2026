@@ -4,7 +4,7 @@ from sqlmodel import SQLModel, Session, create_engine
 from app.database import models  # register models
 
 DB_PATH = Path(__file__).resolve().parents[2] / "database.db"
-engine = create_engine(f"sqlite:///{DB_PATH}", echo=True, connect_args={"check_same_thread": False})
+engine = create_engine(f"sqlite:///{DB_PATH}", hide_parameters=True, connect_args={"check_same_thread": False})
 
 
 @event.listens_for(engine, "connect")
