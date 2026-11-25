@@ -1,11 +1,11 @@
 {
-    "name": "warehouse_mobile",
-    "short_name": "warehouse_mobile",
+    "name": "Склад",
+    "short_name": "Склад",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#17483d",
+    "theme_color": "#17483d",
+    "description": "Мобильное приложение для учёта товаров на складе.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

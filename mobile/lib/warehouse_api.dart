@@ -76,9 +76,10 @@ class WarehouseApi {
   String? _auth, username;
   bool get isAdmin => username == 'admin';
 
-  Future<dynamic> _request(
+  Future<T> _request<T>(
     String method,
-    String path, {
+    String path,
+    T Function(dynamic) parse, {
     String? credential,
     Map<String, dynamic>? data,
   }) async {
@@ -106,6 +107,15 @@ class WarehouseApi {
       );
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
+      if (response.statusCode == 401 &&
+          credential == null &&
+          basic != null &&
+          basic == _auth) {
+        logout();
+        throw const WarehouseApiException(
+          'Доступ истёк. Выйдите из профиля и войдите снова.',
+        );
+      }
       final message = switch (response.statusCode) {
         401 => 'Проверьте имя и пароль.',
         403 => 'Недостаточно прав.',
@@ -116,16 +126,30 @@ class WarehouseApi {
       };
       throw WarehouseApiException(message);
     }
-    return response.bodyBytes.isEmpty
-        ? null
-        : jsonDecode(utf8.decode(response.bodyBytes));
+    const invalidResponse = WarehouseApiException(
+      'Некорректный ответ сервера.',
+    );
+    try {
+      final body = response.bodyBytes.isEmpty
+          ? null
+          : jsonDecode(utf8.decode(response.bodyBytes));
+      return parse(body);
+    } on FormatException {
+      throw invalidResponse;
+    } on TypeError {
+      throw invalidResponse;
+    }
   }
 
   Future<void> login(String user, String pass) async {
     logout();
     final credential = 'Basic ${base64Encode(utf8.encode('$user:$pass'))}';
-    final identity = await _request('GET', '/auth/me', credential: credential);
-    username = identity['username'] as String;
+    username = await _request(
+      'GET',
+      '/auth/me',
+      (body) => (body as Map<String, dynamic>)['username'] as String,
+      credential: credential,
+    );
     _auth = credential;
   }
 
@@ -134,25 +158,38 @@ class WarehouseApi {
     username = null;
   }
 
-  Future<List<Item>> listItems() async =>
-      (await _request('GET', '/items') as List)
-          .map((row) => Item.fromJson(row))
-          .toList();
-  Future<CatalogReferences> references() async {
-    final data = await _request('GET', '/catalog/references');
-    List<CatalogEntry> rows(String key) =>
-        (data[key] as List).map((row) => CatalogEntry.fromJson(row)).toList();
-    return CatalogReferences(
-      categories: rows('categories'),
-      suppliers: rows('suppliers'),
-    );
-  }
+  Future<List<Item>> listItems() => _request(
+    'GET',
+    '/items',
+    (body) => (body as List).map((row) => Item.fromJson(row)).toList(),
+  );
 
-  Future<Item> createItem(ItemInput item) async =>
-      Item.fromJson(await _request('POST', '/items', data: item.toJson()));
-  Future<Item> updateItem(int id, ItemInput item) async =>
-      Item.fromJson(await _request('PUT', '/items/$id', data: item.toJson()));
-  Future<void> deleteItem(int id) async {
-    await _request('DELETE', '/items/$id');
-  }
+  Future<CatalogReferences> references() => _request(
+    'GET',
+    '/catalog/references',
+    (body) {
+      final data = body as Map<String, dynamic>;
+      List<CatalogEntry> rows(String key) =>
+          (data[key] as List).map((row) => CatalogEntry.fromJson(row)).toList();
+      return CatalogReferences(
+        categories: rows('categories'),
+        suppliers: rows('suppliers'),
+      );
+    },
+  );
+
+  Future<Item> createItem(ItemInput item) => _request(
+    'POST',
+    '/items',
+    (body) => Item.fromJson(body),
+    data: item.toJson(),
+  );
+  Future<Item> updateItem(int id, ItemInput item) => _request(
+    'PUT',
+    '/items/$id',
+    (body) => Item.fromJson(body),
+    data: item.toJson(),
+  );
+  Future<void> deleteItem(int id) =>
+      _request<void>('DELETE', '/items/$id', (_) {});
 }
