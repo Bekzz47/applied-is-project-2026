@@ -223,3 +223,6 @@ __marimo__/
 *.db
 *.sqlite
 *.sqlite3
+
+# Dart sources belong in version control
+!mobile/lib/

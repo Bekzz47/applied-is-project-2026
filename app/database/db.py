@@ -1,10 +1,18 @@
 from pathlib import Path
 from sqlalchemy import event
+from sqlalchemy.pool import NullPool
 from sqlmodel import SQLModel, Session, create_engine
 from app.database import models  # register models
 
 DB_PATH = Path(__file__).resolve().parents[2] / "database.db"
-engine = create_engine(f"sqlite:///{DB_PATH}", echo=True, connect_args={"check_same_thread": False})
+# A file-backed SQLite connection is inexpensive. Opening it per session also
+# avoids making request workers wait for a small shared connection pool.
+engine = create_engine(
+    f"sqlite:///{DB_PATH}",
+    poolclass=NullPool,
+    hide_parameters=True,
+    connect_args={"check_same_thread": False},
+)
 
 
 @event.listens_for(engine, "connect")
