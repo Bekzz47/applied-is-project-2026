@@ -50,8 +50,22 @@ class TestWarehouse extends WarehouseApi {
   Future<void> deleteItem(int id) async => rows.removeWhere((i) => i.id == id);
 }
 
-const pencil = Item(id: 1, name: 'Карандаш', price: 30, quantity: 2, categoryId: 1, supplierId: 2);
-const paper = Item(id: 2, name: 'Бумага', price: 40, quantity: 3, categoryId: 1, supplierId: 2);
+const pencil = Item(
+  id: 1,
+  name: 'Карандаш',
+  price: 30,
+  quantity: 2,
+  categoryId: 1,
+  supplierId: 2,
+);
+const paper = Item(
+  id: 2,
+  name: 'Бумага',
+  price: 40,
+  quantity: 3,
+  categoryId: 1,
+  supplierId: 2,
+);
 
 Finder field(String key) => find.byKey(Key(key));
 
@@ -95,7 +109,10 @@ void main() {
     await t.pumpWidget(WarehouseApp(api: api));
     await t.enterText(field('username'), 'admin');
     await t.enterText(field('password'), 'bad-password');
-    final passwordField = find.descendant(of: field('password'), matching: find.byType(EditableText));
+    final passwordField = find.descendant(
+      of: field('password'),
+      matching: find.byType(EditableText),
+    );
     expect(t.widget<EditableText>(passwordField).obscureText, isTrue);
     await tap(t, find.text('Войти'));
     expect(find.text('Проверьте имя и пароль.'), findsOneWidget);
@@ -135,6 +152,7 @@ void main() {
       await tap(t, find.text('Удалить'));
       expect(find.text('Удалить товар?'), findsOneWidget);
     }
+
     await openDialog();
     await tap(t, find.text('Отмена'));
     expect(api.rows, contains(pencil));
