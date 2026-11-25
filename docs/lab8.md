@@ -49,3 +49,9 @@ python -m bandit -r app -ll
 ```
 
 Тесты запускают настоящее приложение с отдельной временной SQLite-базой. Набор лабораторных №2–4 проверяет прежний учебный режим, набор №8 создаёт собственные пароли для обеих ролей. Команды CI и файлы отчётов доступны в [GitHub Actions](../.github/workflows/fastapi-tests.yml).
+
+См. также [измерения Locust для 5, 20, 50 и 100 пользователей](lab8-load.md).
+
+В наборе 29 тестов pytest: 11 прежних и 18 для лабораторной №8. Первый [запуск в GitHub Actions](https://github.com/Bekzz47/applied-is-project-2026/actions/runs/45587501854) завершился успешно за 40 секунд. Артефакт `quality-reports` содержит результаты pytest в JUnit XML и вывод Bandit.
+
+![Результат проверки API в GitHub Actions](lab8-ci.jpg)

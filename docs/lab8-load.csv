@@ -1,0 +1,6 @@
+pool,users,seconds,requests,failures,error_pct,rps,mean_ms,p95_ms,cpu_mean_pct,rss_peak_mib
+QueuePool,5,60,592,0,0.0,10.05,3.8,6.0,2.7,61.9
+QueuePool,20,120,4733,0,0.0,39.74,3.34,6.0,8.3,64.6
+QueuePool,50,180,17754,0,0.0,99.09,3.12,5.0,16.4,67.5
+QueuePool,100,180,29607,40,0.14,165.19,104.89,8.0,24.3,79.1
+NullPool,100,180,35175,0,0.0,196.15,9.53,38.0,39.1,88.7

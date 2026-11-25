@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Склад · прототип экранов</title>
+<style>
+  :root { color-scheme: light; font-family: Roboto, Arial, sans-serif; color: #163e34; background: #e9ece4; }
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  main { max-width: 390px; margin: 24px auto; }
+  section { display: none; min-height: 690px; flex-direction: column; background: #f7f7f1; padding: 28px 21px 18px; border: 1px solid #bcc9bc; border-radius: 24px; }
+  section:target, body:not(:has(section:target)) #login { display: flex; }
+  header { border-bottom: 1px solid #d0d8cb; padding-bottom: 15px; margin-bottom: 24px; }
+  small, .dim { color: #51615a; }
+  h1 { font-size: 31px; margin: 8px 0 3px; letter-spacing: -1px; }
+  h2 { font-size: 17px; margin: 24px 0 10px; }
+  label { display: block; font-weight: 550; margin: 12px 0 5px; font-size: 14px; }
+  input, select { color: #213f35; background: #fbfcf8; border: 1px solid #7c8b80; border-radius: 8px; padding: 11px 12px; font: inherit; width: 100%; }
+  .button, .sort, nav a { display: inline-block; text-align: center; text-decoration: none; font-weight: 600; }
+  .button { color: white; border-radius: 24px; padding: 13px 18px; background: #173d34; margin: 18px 0 6px; }
+  .secondary { background: #dde6d7; color: #163e34; }
+  .panel { border-radius: 16px; padding: 18px; background: #173d34; color: white; }
+  .panel b { display: block; font-size: 35px; margin: 6px 0; font-variant-numeric: tabular-nums; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stat { background: #e7eddf; border-radius: 12px; padding: 12px; margin-top: 10px; font-size: 13px; }
+  .stat b { display: block; font-size: 23px; margin-bottom: 4px; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; border-bottom: 1px solid #d0d8cb; }
+  .row a, .back { color: #1e5947; }
+  .row small { display: block; margin-top: 4px; }
+  .sort { padding: 8px 12px; background: #d3ef81; border-radius: 14px; font-size: 13px; align-self: start; margin-top: 10px; }
+  nav { display: flex; justify-content: space-between; margin-top: auto; gap: 3px; padding-top: 24px; }
+  nav a { flex: 1; color: #375344; padding: 10px 4px; border-radius: 20px; font-size: 14px; }
+  nav a[aria-current] { background: #d3ef81; }
+  .back { font-size: 15px; align-self: start; padding-bottom: 6px; }
+  .demo { text-align: center; margin: 15px 0; font-size: 12px; color: #57635b; }
+  .screen-list { max-width: 500px; margin: 0 auto 24px; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+  .screen-list a { color: #284e41; }
+  @media (max-width: 420px) { main { margin: 0 auto; } section { border-radius: 0; min-height: 100dvh; } }
+</style>
+<main>
+<section id="login" aria-labelledby="login-title">
+  <header><small>Складской учёт</small><h1 id="login-title">Вход</h1></header>
+  <label for="user">Логин</label><input id="user" value="admin" readonly>
+  <label for="password">Пароль</label><input id="password" value="••••••••••••" readonly>
+  <a class="button" href="#home">Войти</a>
+</section>
+<section id="home" aria-labelledby="home-title">
+  <header><small>Складской учёт</small><h1 id="home-title">Обзор</h1></header>
+  <div class="panel">Стоимость запасов<b>3 712 500 ₸</b></div>
+  <div class="pair"><div class="stat"><b>215</b>единиц на складе</div><div class="stat"><b>5</b>наименований</div></div>
+  <h2>Наименьшие остатки</h2>
+  <div class="row"><b>Ноутбук</b><span>10 шт.</span></div>
+  <div class="row"><b>Мышь</b><span>25 шт.</span></div>
+  <div class="row"><b>Футболка</b><span>30 шт.</span></div>
+  <nav aria-label="Разделы"><a aria-current="page" href="#home">Обзор</a><a href="#items">Товары</a><a href="#profile">Профиль</a></nav>
+</section>
+<section id="items" aria-labelledby="items-title">
+  <header><small>Складской учёт</small><h1 id="items-title">Товары</h1></header>
+  <label for="search">Поиск по названию</label><input id="search" type="search" placeholder="Найти товар">
+  <span class="sort">По названию ↑</span>
+  <div class="row"><span><b>Блокнот</b><small>1 200 ₸ · 50 шт.</small></span><a href="#form">Изменить</a></div>
+  <div class="row"><span><b>Мышь</b><small>6 500 ₸ · 25 шт.</small></span><a href="#form">Изменить</a></div>
+  <div class="row"><span><b>Ноутбук</b><small>320 000 ₸ · 10 шт.</small></span><a href="#form">Изменить</a></div>
+  <div class="row"><span><b>Ручка</b><small>350 ₸ · 100 шт.</small></span><a href="#form">Изменить</a></div>
+  <div class="row"><span><b>Футболка</b><small>8 500 ₸ · 30 шт.</small></span><a href="#form">Изменить</a></div>
+  <a class="button" href="#form">Добавить товар</a>
+  <nav aria-label="Разделы"><a href="#home">Обзор</a><a aria-current="page" href="#items">Товары</a><a href="#profile">Профиль</a></nav>
+</section>
+<section id="form" aria-labelledby="form-title">
+  <a class="back" href="#items">← Товары</a>
+  <header><small>Карточка товара</small><h1 id="form-title">Новый товар</h1></header>
+  <label for="name">Название</label><input id="name" placeholder="Клавиатура">
+  <div class="pair"><div><label for="price">Цена, ₸</label><input id="price" type="number" min="0" placeholder="15000"></div><div><label for="quantity">Количество</label><input id="quantity" type="number" min="0" placeholder="8"></div></div>
+  <label for="category">Категория</label><select id="category"><option>Электроника</option><option>Канцелярия</option><option>Одежда</option></select>
+  <label for="supplier">Поставщик</label><select id="supplier"><option>Tech Supply</option><option>Fashion Trade</option><option>Office Goods</option></select>
+  <a class="button" href="#items">Сохранить</a>
+</section>
+<section id="profile" aria-labelledby="profile-title">
+  <header><small>Складской учёт</small><h1 id="profile-title">Профиль</h1></header>
+  <div class="row"><b>Пользователь</b><span>admin</span></div>
+  <div class="row"><b>Роль</b><span>Администратор</span></div>
+  <a class="button secondary" href="#login">Выйти</a>
+  <nav aria-label="Разделы"><a href="#home">Обзор</a><a href="#items">Товары</a><a aria-current="page" href="#profile">Профиль</a></nav>
+</section>
+</main>
+<p class="demo">Макет №9 · переходы между экранами на демонстрационных данных</p>
+<div class="screen-list"><a href="#login">Вход</a><a href="#home">Обзор</a><a href="#items">Товары</a><a href="#form">Форма</a><a href="#profile">Профиль</a></div>
+<script>
+  const rows = Array.from(document.querySelectorAll('#items .row'));
+  const search = document.querySelector('#search');
+  search.addEventListener('input', () => {
+    for (const row of rows) {
+      const matches = row.querySelector('b').textContent.toLowerCase().includes(search.value.trim().toLowerCase());
+      row.style.display = matches ? '' : 'none';
+    }
+  });
+
+  const title = document.querySelector('#form-title');
+  const fields = ['name', 'price', 'quantity', 'category', 'supplier'].map(id => document.getElementById(id));
+  function fillForm(values) {
+    fields.forEach((field, index) => { field.value = values[index]; });
+  }
+  const examples = [
+    ['Блокнот', 1200, 50, 'Канцелярия', 'Office Goods'],
+    ['Мышь', 6500, 25, 'Электроника', 'Tech Supply'],
+    ['Ноутбук', 320000, 10, 'Электроника', 'Tech Supply'],
+    ['Ручка', 350, 100, 'Канцелярия', 'Office Goods'],
+    ['Футболка', 8500, 30, 'Одежда', 'Fashion Trade'],
+  ];
+  rows.forEach((row, index) => row.querySelector('a').addEventListener('click', () => {
+    title.textContent = 'Изменить товар';
+    fillForm(examples[index]);
+  }));
+  document.querySelector('#items .button').addEventListener('click', () => {
+    title.textContent = 'Новый товар';
+    fillForm(['', '', '', 'Электроника', 'Tech Supply']);
+  });
+</script>
+</html>
